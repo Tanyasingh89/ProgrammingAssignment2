@@ -1,0 +1,96 @@
+makeCacheMatrix <- function(a = matrix()) {
+    z <- NULL
+    # Set the value of the matrix
+    set <- function(b) {
+        a <<- b    # Set the value
+        z <<- NULL # Clear the cache
+    }
+    # get the value of the matrix
+    get <- function() a
+    # Use inverse when there is no cached inverse
+    setInverse <- function(inverse) z <<- inverse
+    # Define function to get the inverse
+    getInverse <- function() z
+    
+    # List the above four functions
+    list(set = set, 
+         get = get,
+         setInverse = setInverse,
+         getInverse = getInverse)
+}
+
+
+
+cacheSolve <- function(x, ...) {
+        ## matrix that is the inverse of 'a'
+        inv <- a$getInverse()
+        if (!is.null(inv)) {
+                message("Getting Cached Data")
+                return(inv)
+        }
+        mx <- a$get()
+        inv <- solve(mx, ...)
+        a$setInverse(inv)
+        inv
+}
+
+
+
+
+
+
+
+> my_matrix$getInverse()
+NULL
+> cacheSolve(my_matrix)
+ Error in solve.default(data) : 
+  Lapack routine dgesv: system is exactly singular: U[3,3] = 0 
+> my_matrix <- makeCacheMatrix(matrix(2:10, 3, 3))
+> my_matrix$get()
+     [,1] [,2] [,3]
+[1,]    2    5    8
+[2,]    3    6    9
+[3,]    4    7   10
+> my_matrix$getInverse()
+NULL
+> cacheSolve(my_matrix)
+ Error in solve.default(data) : 
+  Lapack routine dgesv: system is exactly singular: U[3,3] = 0 
+> my_matrix <- matrix(2:4, 2, 2))
+Error: unexpected ')' in "my_matrix <- matrix(2:4, 2, 2))"
+> my_matrix <- matrix(2:4, 2, 2)
+Warning message:
+In matrix(2:4, 2, 2) :
+  data length [3] is not a sub-multiple or multiple of the number of rows [2]
+> my_matrix <- matrix(2:5, 2, 2)
+> c_matrix <- makeCacheMatrix(my_matrix)
+> c_matrix$get()
+     [,1] [,2]
+[1,]    2    4
+[2,]    3    5
+> cacheSolve(c_matrix)
+     [,1] [,2]
+[1,] -2.5    2
+[2,]  1.5   -1
+> c_matrix$getInverse()
+     [,1] [,2]
+[1,] -2.5    2
+[2,]  1.5   -1
+> c_matrix$getInverse()
+     [,1] [,2]
+[1,] -2.5    2
+[2,]  1.5   -1
+> cacheSolve(c_matrix)
+Getting Cached Data
+     [,1] [,2]
+[1,] -2.5    2
+[2,]  1.5   -1
+> 
+     [,1] [,2]
+[1,] -2.5    2
+[2,]  1.5   -1
+> cacheSolve(c_matrix)
+Getting Cached Data
+     [,1] [,2]
+[1,] -2.5    2
+[2,]  1.5   -1
